@@ -73,3 +73,24 @@ fn decode_batch_seq() {
         .iter()
         .for_each(|seq| println!("{}", seq));
 }
+
+
+
+#[test]
+fn vocab_json_test() {
+    let (token, sequence) = extract_columns(
+            read_vocab_dt()
+        );
+
+    let vocab_hashmap: HashMap<i64, String> = build_vocab_hashmap(token, sequence);
+
+    serialize(vocab_hashmap);
+}
+
+
+#[test]
+fn json_deserialize_test() {
+    let vocab_hashmap: HashMap<i64, String> = deserialize(String::from("./proc/vocab_hashmap.json"));
+
+    println!("{:?}", vocab_hashmap.get(&719).expect("Cannot get value for supplied key"));
+}

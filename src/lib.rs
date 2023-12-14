@@ -1,6 +1,7 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File, io::Read};
 use polars::prelude::*;
 use rayon::prelude::*;
+use serde_json::*;
 
 
 #[cfg(test)]
@@ -59,6 +60,29 @@ fn build_vocab_hashmap(token: Vec<i64>, sequence: Vec<String>) -> HashMap<i64, S
     return vocab_hashmap;
 }
 
+
+fn serialize(vocab_hashmap: HashMap<i64, String>) {
+    
+    let target = File::create("./proc/vocab_hashmap.json")
+        .expect("Cannot open file for writing!");
+    serde_json::to_writer(target, &vocab_hashmap)
+        .expect("Cannot serialize and save it as json");
+}
+
+
+fn deserialize(filepath: String) -> HashMap<i64, String> {
+   
+    let mut target = File::open(filepath)
+        .expect("Cannot open file. Check file path");
+    let mut json_text = String::new();
+
+    target.read_to_string(&mut json_text)
+        .expect("Cannot read in json file");
+
+
+    serde_json::from_str(&json_text)
+        .expect("Cannot deserialize json text")
+}
 
 
 fn get_sequence_from_token(vocab_hashmap: HashMap<i64, String>,
